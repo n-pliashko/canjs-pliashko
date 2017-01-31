@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajax</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <form method="post" action="res1.json">
+        <label>Login:</label>
+        <input type="text" name="login" />
+        <label>Password:</label>
+        <input type="password" name="password"/>
+        <input type="submit" id="send" value="Send"/>
+    </form>
+    <div id="container">
+        <h1></h1>
+    </div>
+</body>
+</html>

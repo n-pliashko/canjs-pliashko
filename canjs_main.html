@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-framework="canjs">
+<head>
+    <meta charset="UTF-8">
+    <title>CanJS</title>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.js" ></script>
+    <script src="//canjs.com/release/2.3.27/can.jquery.js"></script>
+    <script src="//canjs.com/release/2.1.4/can.fixture.js"></script>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/mustache" id="app-template">
+ <form id="login">
+        <label>Login:</label>
+        <input type="text" name="login"/>
+        <label>Password:</label>
+        <input type="password" name="password"/>
+        <button id="send" can-click="send">Send</button>
+ </form>
+</script>
+
+<script type="text/mustache" id="success-template">
+       <h1>Congratulations!!! {{login}} you are logined</h1>
+</script>
+
+<script type="text/mustache" id="error-template">
+        <h1>Oooops!!! Not users with such login - {{login}}</h1>
+</script>
+
+<script>
+    $('#app').html(can.view('app-template', {}));
+    can.fixture('GET /logins', 'res2.json');
+    authModel  = can.Model.extend({
+        findAll: 'GET /logins'
+    },{});
+
+    Login = can.Control({
+        '#send click' : function(el, e) {
+            values = can.deparam(this.element.serialize());
+            var exist = false;
+            authModel.findAll().done(function(returnedObject) {
+                can.each(returnedObject,
+                    function (value, index) {
+                        if (values.login === value.login && values.password === value.password) {
+                            exist = true;
+                            return false;
+                        }
+                    }
+                );
+
+                if (exist)
+                    $('#app').html(can.view('success-template', values));
+                else
+                    $('#app').html(can.view('error-template', values));
+            });
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    var auth = can.Map.extend({
+        define: {
+            login: {type: "string"},
+            password: {type: "string"},
+            logined: {type: "boolean", value: false}
+        }
+    });
+
+    var loginControl = new Login('#login', {auth: auth});
+    can.route.ready();
+</script>
+</body>
+</html>
